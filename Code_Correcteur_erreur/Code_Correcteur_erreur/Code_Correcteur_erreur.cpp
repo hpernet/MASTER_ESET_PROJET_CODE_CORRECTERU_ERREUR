@@ -33,9 +33,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //// TODO: Placez le code ici.
 
     // Constantes
-    #define K_NB_BIT_INFO 12
-    #define NB_MOTS_INFO  4096
+    #define K_NB_BIT_INFO     12
+    #define NB_MOTS_INFO      4096
     #define N_NB_BIT_MOT_CODE 23
+    #define NB_COLUMN_A       11   
 
     // Déclaration des variables 
     int i, j, k, iBcl1, iBcl2;
@@ -61,10 +62,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // Matrice mots informations
     int I[NB_MOTS_INFO][K_NB_BIT_INFO];
+    int H[NB_COLUMN_A][K_NB_BIT_INFO];
 
     // Matrices de calcules 
     int mul[NB_MOTS_INFO][N_NB_BIT_MOT_CODE];
-    int G_tr[K_NB_BIT_INFO][N_NB_BIT_MOT_CODE];
+    int A[K_NB_BIT_INFO][NB_COLUMN_A], A_trans[NB_COLUMN_A][K_NB_BIT_INFO];
+
 
     // Initialisation des mots infos 
     for (iBcl1 = 0; iBcl1 < NB_MOTS_INFO; iBcl1++)
@@ -76,16 +79,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             val_temp = val_temp / 2;
         }
     }
-
-    /* 
-    // Calcule de transposé
-    for (i = 0; i < 25; i++)
-    {
-        for (j = 0; j < 12; j++)
-        {
-            G_tr[j][i] = G[i][j];
-        }
-    }*/
 
     // Multiplication de matrice 
     for (i = 0; i < NB_MOTS_INFO; i++)
@@ -118,6 +111,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         p_min_temp = 0;
     }
+
+    // Calcule de H 
+    // Calcule de la transposé de A
+    for (i = 0; i < K_NB_BIT_INFO; i++)
+    {
+        for (j = 0; j < NB_COLUMN_A; j++)
+        {
+            A_trans[j][i] = A[i][j];
+        }
+    }
+
+
+    // Fill H with A transposé
+    for (i = 0; i < NB_COLUMN_A; i++)
+    {
+        for (j = 0; j < K_NB_BIT_INFO; j++)
+        {
+            H[i][j] = A_trans[i][j];
+        }
+    }
+
+    // Fill H with ID matrice 
+
+
+    
 
  
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
