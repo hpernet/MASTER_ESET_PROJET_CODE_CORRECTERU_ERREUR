@@ -4,6 +4,9 @@
 #include "pch.h"
 #include "framework.h"
 #include "Code_Correcteur_erreur.h"
+#include <stdio.h>
+#include <assert.h>
+#include <windows.h>
 
 #define MAX_LOADSTRING 100
 
@@ -11,6 +14,7 @@
 HINSTANCE hInst;                                // instance actuelle
 WCHAR szTitle[MAX_LOADSTRING];                  // Texte de la barre de titre
 WCHAR szWindowClass[MAX_LOADSTRING];            // nom de la classe de fenêtre principale
+HANDLE serialHandle;
 
 // Déclarations anticipées des fonctions incluses dans ce module de code :
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -26,7 +30,97 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Placez le code ici.
+    //// TODO: Placez le code ici.
+
+    // Constantes
+    #define K_NB_BIT_INFO 12
+    #define NB_MOTS_INFO  4096
+    #define N_NB_BIT_MOT_CODE 23
+
+    // Déclaration des variables 
+    int i, j, k, iBcl1, iBcl2;
+    int p_min, p_min_temp, val_temp;
+
+    // ----------
+    // Matrices : 
+    // ----------
+    // Matrice generatrice
+    // -------------------------------------------------------------1-------------------------------|------------------A----------------------|
+    int G[K_NB_BIT_INFO][N_NB_BIT_MOT_CODE] = { { 1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  0, 1,	0,	1,	1,	1,	0,	0,	0,	1},
+                                                { 0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 1,	1,	1,	0,	0,	1,	0,	0,	1},
+                                                { 0,	0,	1,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	1,	0,	0,	1,	0,	1,	0,	1},
+                                                { 0,	0,	0,	1,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	0,	0,	1,	1,	1,	0,	1,	1},
+                                                { 0,	0,	0,	0,	1,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	0,	1,	1,	0,	1,	1,	0,	0},
+                                                { 0,	0,	0,	0,	0,	1,	0,	0,	0,	0,	0,  0,    0,  1, 1,	0,	0,	1,	1,	0,	1,	1,	0},
+                                                { 0,	0,	0,	0,	0,	0,	1,	0,	0,	0,	0,  0,    0,  0, 1,	1,	0,	0,	1,	1,	0,	1,	1},
+                                                { 0,	0,	0,	0,	0,	0,	0,	1,	0,	0,	0,  0,    1,  0, 1,	1,	0,	1,	1,	1,	1,	0,	0},
+                                                { 0,	0,	0,	0,	0,	0,	0,	0,	1,	0,	0,  0,    0,  1, 0,	1,	1,	0,	1,	1,	1,	1,	0},
+                                                { 0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	0,  0,    0,  0, 1,	0,	1,	1,	0,	1,	1,	1,	1},
+                                                { 0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,  0,    1,  0, 1,	1,	1,	0,	0,	0,	1,	1,	0},
+                                                { 0,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,  1,    0,  1, 0,	1,	1,	1,	0,	0,	0,	1,	1} };
+
+    // Matrice mots informations
+    int I[NB_MOTS_INFO][K_NB_BIT_INFO];
+
+    // Matrices de calcules 
+    int mul[NB_MOTS_INFO][N_NB_BIT_MOT_CODE];
+    int G_tr[K_NB_BIT_INFO][N_NB_BIT_MOT_CODE];
+
+    // Initialisation des mots infos 
+    for (iBcl1 = 0; iBcl1 < NB_MOTS_INFO; iBcl1++)
+    {
+        val_temp = iBcl1;
+        for (iBcl2 = K_NB_BIT_INFO - 1; iBcl2 >= 0 ; iBcl2--)
+        {
+            I[iBcl1][iBcl2] = val_temp % 2;
+            val_temp = val_temp / 2;
+        }
+    }
+
+    /* 
+    // Calcule de transposé
+    for (i = 0; i < 25; i++)
+    {
+        for (j = 0; j < 12; j++)
+        {
+            G_tr[j][i] = G[i][j];
+        }
+    }*/
+
+    // Multiplication de matrice 
+    for (i = 0; i < NB_MOTS_INFO; i++)
+    {
+        for (j = 0; j < 25; j++)
+        {
+            mul[i][j] = 0;
+            for (k = 0; k < K_NB_BIT_INFO; k++)
+            {
+                mul[i][j] = (I[i][k] * G[k][j] + mul[i][j]) % 2;
+            }
+        }
+    }
+
+    // Calcule du poid min -> distance min 
+    p_min = N_NB_BIT_MOT_CODE;
+    p_min_temp = N_NB_BIT_MOT_CODE;
+    for (i = 0; i < NB_MOTS_INFO; i++)
+    {
+        for (j = 0; j < N_NB_BIT_MOT_CODE; j++)
+        {
+            if (mul[i][j] == 1)
+            {
+                p_min_temp++;
+            }
+        }
+        if ((p_min > p_min_temp) & (p_min_temp != 0))
+        {
+            p_min = p_min_temp;
+        }
+        p_min_temp = 0;
+    }
+
+ 
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     // Initialise les chaînes globales
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -136,6 +230,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case IDM_EXIT:
+                CloseHandle(serialHandle);
                 DestroyWindow(hWnd);
                 break;
             default:
