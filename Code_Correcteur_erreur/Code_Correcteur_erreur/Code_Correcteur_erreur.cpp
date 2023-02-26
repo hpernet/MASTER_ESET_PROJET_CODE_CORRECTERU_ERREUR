@@ -36,7 +36,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     #define K_NB_BIT_INFO     12
     #define NB_MOTS_INFO      4096
     #define N_NB_BIT_MOT_CODE 23
+
     #define NB_COLUMN_A       11   
+    #define NB_LINE_A         K_NB_BIT_INFO
+    #define NB_COLUMN_G       N_NB_BIT_MOT_CODE   
+    #define NB_LINE_G         K_NB_BIT_INFO
+    #define NB_COLUMN_I       K_NB_BIT_INFO   
+    #define NB_LINE_I         NB_MOTS_INFO
+    #define NB_COLUMN_H       (K_NB_BIT_INFO + NB_COLUMN_A) 
+    #define NB_LINE_H         NB_COLUMN_A
 
     // Déclaration des variables 
     int i, j, k, iBcl1, iBcl2;
@@ -46,27 +54,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Matrices : 
     // ----------
     // Matrice generatrice
-    // -------------------------------------------------------------1-------------------------------|------------------A----------------------|
-    int G[K_NB_BIT_INFO][N_NB_BIT_MOT_CODE] = { { 1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  0, 1,	0,	1,	1,	1,	0,	0,	0,	1},
-                                                { 0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 1,	1,	1,	0,	0,	1,	0,	0,	1},
-                                                { 0,	0,	1,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	1,	0,	0,	1,	0,	1,	0,	1},
-                                                { 0,	0,	0,	1,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	0,	0,	1,	1,	1,	0,	1,	1},
-                                                { 0,	0,	0,	0,	1,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	0,	1,	1,	0,	1,	1,	0,	0},
-                                                { 0,	0,	0,	0,	0,	1,	0,	0,	0,	0,	0,  0,    0,  1, 1,	0,	0,	1,	1,	0,	1,	1,	0},
-                                                { 0,	0,	0,	0,	0,	0,	1,	0,	0,	0,	0,  0,    0,  0, 1,	1,	0,	0,	1,	1,	0,	1,	1},
-                                                { 0,	0,	0,	0,	0,	0,	0,	1,	0,	0,	0,  0,    1,  0, 1,	1,	0,	1,	1,	1,	1,	0,	0},
-                                                { 0,	0,	0,	0,	0,	0,	0,	0,	1,	0,	0,  0,    0,  1, 0,	1,	1,	0,	1,	1,	1,	1,	0},
-                                                { 0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	0,  0,    0,  0, 1,	0,	1,	1,	0,	1,	1,	1,	1},
-                                                { 0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,  0,    1,  0, 1,	1,	1,	0,	0,	0,	1,	1,	0},
-                                                { 0,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,  1,    0,  1, 0,	1,	1,	1,	0,	0,	0,	1,	1} };
+    // -------------------------------------------------1-------------------------------|------------------A----------------------|
+    int G[NB_LINE_G][NB_COLUMN_G] = { { 1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  0, 1,	0,	1,	1,	1,	0,	0,	0,	1},
+                                      { 0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 1,	1,	1,	0,	0,	1,	0,	0,	1},
+                                      { 0,	0,	1,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	1,	0,	0,	1,	0,	1,	0,	1},
+                                      { 0,	0,	0,	1,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	0,	0,	1,	1,	1,	0,	1,	1},
+                                      { 0,	0,	0,	0,	1,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	0,	1,	1,	0,	1,	1,	0,	0},
+                                      { 0,	0,	0,	0,	0,	1,	0,	0,	0,	0,	0,  0,    0,  1, 1,	0,	0,	1,	1,	0,	1,	1,	0},
+                                      { 0,	0,	0,	0,	0,	0,	1,	0,	0,	0,	0,  0,    0,  0, 1,	1,	0,	0,	1,	1,	0,	1,	1},
+                                      { 0,	0,	0,	0,	0,	0,	0,	1,	0,	0,	0,  0,    1,  0, 1,	1,	0,	1,	1,	1,	1,	0,	0},
+                                      { 0,	0,	0,	0,	0,	0,	0,	0,	1,	0,	0,  0,    0,  1, 0,	1,	1,	0,	1,	1,	1,	1,	0},
+                                      { 0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	0,  0,    0,  0, 1,	0,	1,	1,	0,	1,	1,	1,	1},
+                                      { 0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,  0,    1,  0, 1,	1,	1,	0,	0,	0,	1,	1,	0},
+                                      { 0,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,  1,    0,  1, 0,	1,	1,	1,	0,	0,	0,	1,	1} };
 
     // Matrice mots informations
-    int I[NB_MOTS_INFO][K_NB_BIT_INFO];
-    int H[NB_COLUMN_A][K_NB_BIT_INFO];
+    int I[NB_LINE_I][NB_COLUMN_I];
+    int H[NB_LINE_H][NB_COLUMN_H];
 
     // Matrices de calcules 
     int mul[NB_MOTS_INFO][N_NB_BIT_MOT_CODE];
-    int A[K_NB_BIT_INFO][NB_COLUMN_A], A_trans[NB_COLUMN_A][K_NB_BIT_INFO];
+    int A[NB_LINE_A][NB_COLUMN_A], A_trans[NB_COLUMN_A][NB_LINE_A];
 
 
     // Initialisation des mots infos 
@@ -112,6 +120,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         p_min_temp = 0;
     }
 
+    // Calcule de A
+    for (i = NB_COLUMN_G - NB_COLUMN_A; i < NB_COLUMN_G; i++)
+    {
+        for (j = 0; j < NB_LINE_A; j++)
+        {
+            A[j][i - (NB_COLUMN_G - NB_COLUMN_A)] = G[j][i];
+        }
+    }
+
     // Calcule de H 
     // Calcule de la transposé de A
     for (i = 0; i < K_NB_BIT_INFO; i++)
@@ -133,7 +150,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
     // Fill H with ID matrice 
+    // Fill all 0
+    for (i = NB_LINE_A; i < NB_COLUMN_H; i++)
+    {
+        for (j = 0; j < NB_LINE_H; j++)
+        {
+            H[j][i] = 0;
+        }
+    }
 
+    // Fill all 1
+    j = 0;
+    for (i = NB_LINE_A; i < NB_COLUMN_H; i++)
+    {
+        H[j][i] = 1;
+        j++;
+    }
 
     
 

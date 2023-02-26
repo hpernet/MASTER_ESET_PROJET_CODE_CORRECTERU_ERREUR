@@ -1,3 +1,2 @@
 ﻿  Code_Correcteur_erreur.cpp
-D:\Users\hugop\Documents\GitHub\STM32\MASTER_ESET_PROJET_CODE_CORRECTEUR_ERREUR\Code_Correcteur_erreur\Code_Correcteur_erreur\Code_Correcteur_erreur.cpp(102,5): error C3861: 'compute_minimum_weight' : identificateur introuvable
-D:\Users\hugop\Documents\GitHub\STM32\MASTER_ESET_PROJET_CODE_CORRECTEUR_ERREUR\Code_Correcteur_erreur\Code_Correcteur_erreur\Code_Correcteur_erreur.cpp(137,43): error C2087: 'matrice' : indice manquant
+  Code_Correcteur_erreur.vcxproj -> D:\Users\hugop\Documents\GitHub\STM32\MASTER_ESET_PROJET_CODE_CORRECTEUR_ERREUR\Code_Correcteur_erreur\x64\Debug\Code_Correcteur_erreur.exe
