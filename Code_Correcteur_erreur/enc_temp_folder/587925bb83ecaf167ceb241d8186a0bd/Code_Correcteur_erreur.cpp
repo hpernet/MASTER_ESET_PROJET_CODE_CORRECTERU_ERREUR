@@ -24,7 +24,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 // Constantes
 #define K_NB_BIT_INFO     12
-#define NB_MOTS_INFO      256
+#define NB_MOTS_INFO      4096
 #define N_NB_BIT_MOT_CODE 23
 
 #define NB_COLUMN_A       11   
@@ -99,6 +99,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     mot_recu[2] = !mot_recu[2];
     mot_recu[3] = !mot_recu[3];
     mot_recu[4] = !mot_recu[4];
+    mot_recu[7] = !mot_recu[7];
 
 
 
