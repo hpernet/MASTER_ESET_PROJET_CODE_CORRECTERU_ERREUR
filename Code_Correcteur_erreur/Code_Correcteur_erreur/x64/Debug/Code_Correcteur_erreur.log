@@ -1,2 +1,3 @@
 ﻿  Code_Correcteur_erreur.cpp
+D:\Users\hugop\Documents\GitHub\STM32\MASTER_ESET_PROJET_CODE_CORRECTEUR_ERREUR\Code_Correcteur_erreur\Code_Correcteur_erreur\Code_Correcteur_erreur.cpp(41,9): warning C4101: 'word_received' : variable locale non référencée
   Code_Correcteur_erreur.vcxproj -> D:\Users\hugop\Documents\GitHub\STM32\MASTER_ESET_PROJET_CODE_CORRECTEUR_ERREUR\Code_Correcteur_erreur\x64\Debug\Code_Correcteur_erreur.exe

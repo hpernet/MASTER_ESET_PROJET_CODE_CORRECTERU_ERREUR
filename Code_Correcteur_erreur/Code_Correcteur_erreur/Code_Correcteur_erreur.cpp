@@ -1,14 +1,18 @@
 // Code_Correcteur_erreur.cpp : Définit le point d'entrée de l'application.
 //
-
+#include "Code_Correcteur_erreur.h"
 #include "pch.h"
 #include "framework.h"
-#include "Code_Correcteur_erreur.h"
 #include <stdio.h>
 #include <assert.h>
 #include <windows.h>
+#include "Code_Golay.h"
 
 #define MAX_LOADSTRING 100
+// Constantes
+#define K_NB_BIT_INFO     8
+#define NB_MOTS_INFO      256
+#define N_NB_BIT_MOT_CODE 19
 
 // Variables globales :
 HINSTANCE hInst;                                // instance actuelle
@@ -22,61 +26,6 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-// Constantes
-#define K_NB_BIT_INFO     12
-#define NB_MOTS_INFO      256
-#define N_NB_BIT_MOT_CODE 23
-
-#define NB_COLUMN_A       11   
-#define NB_LINE_A         K_NB_BIT_INFO
-#define NB_COLUMN_G       N_NB_BIT_MOT_CODE   
-#define NB_LINE_G         K_NB_BIT_INFO
-#define NB_COLUMN_I       K_NB_BIT_INFO   
-#define NB_LINE_I         NB_MOTS_INFO
-#define NB_COLUMN_C       N_NB_BIT_MOT_CODE
-#define NB_LINE_C         NB_MOTS_INFO
-#define NB_COLUMN_H       (K_NB_BIT_INFO + NB_COLUMN_A) 
-#define NB_LINE_H         NB_COLUMN_A
-#define NB_COLUMN_S       NB_MOTS_INFO
-#define NB_LINE_S         NB_COLUMN_A
-
-// functions prototypes
-void matrix_initialization(void);
-
-// Déclaration des variables 
-int i, j, k, iBcl1, iBcl2, index;
-int p_min, p_min_temp, val_temp;
-
-// ----------
-// Matrices : 
-// ----------
-// Matrice generatrice
-// -------------------------------------------------1-------------------------------|------------------A----------------------|
-int G[NB_LINE_G][NB_COLUMN_G] = { { 1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  0, 1,	0,	1,	1,	1,	0,	0,	0,	1},
-                                  { 0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 1,	1,	1,	0,	0,	1,	0,	0,	1},
-                                  { 0,	0,	1,	0,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	1,	0,	0,	1,	0,	1,	0,	1},
-                                  { 0,	0,	0,	1,	0,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	0,	0,	1,	1,	1,	0,	1,	1},
-                                  { 0,	0,	0,	0,	1,	0,	0,	0,	0,	0,	0,  0,    1,  1, 0,	0,	1,	1,	0,	1,	1,	0,	0},
-                                  { 0,	0,	0,	0,	0,	1,	0,	0,	0,	0,	0,  0,    0,  1, 1,	0,	0,	1,	1,	0,	1,	1,	0},
-                                  { 0,	0,	0,	0,	0,	0,	1,	0,	0,	0,	0,  0,    0,  0, 1,	1,	0,	0,	1,	1,	0,	1,	1},
-                                  { 0,	0,	0,	0,	0,	0,	0,	1,	0,	0,	0,  0,    1,  0, 1,	1,	0,	1,	1,	1,	1,	0,	0},
-                                  { 0,	0,	0,	0,	0,	0,	0,	0,	1,	0,	0,  0,    0,  1, 0,	1,	1,	0,	1,	1,	1,	1,	0},
-                                  { 0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	0,  0,    0,  0, 1,	0,	1,	1,	0,	1,	1,	1,	1},
-                                  { 0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,  0,    1,  0, 1,	1,	1,	0,	0,	0,	1,	1,	0},
-                                  { 0,	0,	0,	0,	0,	0,	0,	0,	0,	0,  0,  1,    0,  1, 0,	1,	1,	1,	0,	0,	0,	1,	1} };
-
-// Matrice mots informations
-int I[NB_LINE_I][NB_COLUMN_I];
-int H[NB_LINE_H][NB_COLUMN_H];
-int C[NB_LINE_C][NB_COLUMN_C];
-int S[NB_MOTS_INFO][N_NB_BIT_MOT_CODE];
-int syndrome[NB_COLUMN_A];
-
-// Matrices de calcules 
-int A[NB_LINE_A][NB_COLUMN_A], A_trans[NB_COLUMN_A][NB_LINE_A];
-int C_trans[NB_COLUMN_C][NB_LINE_C];
-int temp_mat[NB_LINE_C][NB_COLUMN_C];
-
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -87,66 +36,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     //// TODO: Placez le code ici.
-    int mot_recu[N_NB_BIT_MOT_CODE];
+    int word_to_send[K_NB_BIT_INFO] = { 0,0,0,0,0,0,0,1 };
+    int encoded_word[N_NB_BIT_MOT_CODE];
+    int word_received[N_NB_BIT_MOT_CODE];
+    int decoded_word[K_NB_BIT_INFO];
+    int error[N_NB_BIT_MOT_CODE] = { 0,	0,	0,	0,	0,	0,	0,	0,  0,  0, 0, 0,	0,	0,	0,	0,	0,	0,	1 };
 
+    initialization();
 
-    matrix_initialization();
-    for (j = 0; j < NB_COLUMN_C; j++)
-    {
-        mot_recu[j] = C[6][j];
-    }
+    encode(word_to_send, encoded_word);
 
-    mot_recu[2] = !mot_recu[2];
-    mot_recu[3] = !mot_recu[3];
-    mot_recu[4] = !mot_recu[4];
+    add_error(encoded_word, error);
 
+    decode(encoded_word, decoded_word);
 
-
-    // Multiplication de matrice 
-    for (i = 0; i < NB_COLUMN_A; i++)
-    {
-        syndrome[i] = 0;
-        for (k = 0; k < NB_COLUMN_C; k++)
-        {
-            syndrome[i] = (H[i][k] * mot_recu[k] + syndrome[i]) % 2;
-        }
-    }
-
-    // Multiplication de matrice 
-    for (i = 1; i < NB_LINE_C; i++)
-    {
-        for (j = 0; j < NB_COLUMN_C; j++)
-        {
-            if (mot_recu[j] != C[i][j])
-            {
-                temp_mat[i][j] = 1U;
-            }
-            else
-            {
-                temp_mat[i][j] = 0;
-            }
-        }
-    }
-    
-    // Calcule du poid min -> distance min 
-    p_min = N_NB_BIT_MOT_CODE;
-    p_min_temp = N_NB_BIT_MOT_CODE;
-    for (i = 0; i < NB_MOTS_INFO; i++)
-    {
-        for (j = 0; j < N_NB_BIT_MOT_CODE; j++)
-        {
-            if (temp_mat[i][j] == 1)
-            {
-                p_min_temp++;
-            }
-        }
-        if ((p_min > p_min_temp) & (p_min_temp != 0))
-        {
-            p_min = p_min_temp;
-            index = i;
-        }
-        p_min_temp = 0;
-    }
 
     //// Calcule de la transposé de C
     //for (i = 0; i < NB_LINE_C; i++)
@@ -169,8 +72,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //        }
     //    }
     //}
-
-    
 
  
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -202,100 +103,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     return (int) msg.wParam;
 }
-
-void matrix_initialization(void)
-{
-    // Initialisation des mots infos 
-    for (iBcl1 = 0; iBcl1 < NB_MOTS_INFO; iBcl1++)
-    {
-        val_temp = iBcl1;
-        for (iBcl2 = K_NB_BIT_INFO - 1; iBcl2 >= 0; iBcl2--)
-        {
-            I[iBcl1][iBcl2] = val_temp % 2;
-            val_temp = val_temp / 2;
-        }
-    }
-
-    // Calcule de C
-    // Multiplication de matrice 
-    for (i = 0; i < NB_LINE_I; i++)
-    {
-        for (j = 0; j < NB_COLUMN_G; j++)
-        {
-            C[i][j] = 0;
-            for (k = 0; k < NB_LINE_G; k++)
-            {
-                C[i][j] = (I[i][k] * G[k][j] + C[i][j]) % 2;
-            }
-        }
-    }
-
-    // Calcule du poid min -> distance min 
-    p_min = N_NB_BIT_MOT_CODE;
-    p_min_temp = N_NB_BIT_MOT_CODE;
-    for (i = 0; i < NB_MOTS_INFO; i++)
-    {
-        for (j = 0; j < N_NB_BIT_MOT_CODE; j++)
-        {
-            if (C[i][j] == 1)
-            {
-                p_min_temp++;
-            }
-        }
-        if ((p_min > p_min_temp) & (p_min_temp != 0))
-        {
-            p_min = p_min_temp;
-        }
-        p_min_temp = 0;
-    }
-
-    // Calcule de A
-    for (i = NB_COLUMN_G - NB_COLUMN_A; i < NB_COLUMN_G; i++)
-    {
-        for (j = 0; j < NB_LINE_A; j++)
-        {
-            A[j][i - (NB_COLUMN_G - NB_COLUMN_A)] = G[j][i];
-        }
-    }
-
-    // Calcule de H 
-    // Calcule de la transposé de A
-    for (i = 0; i < NB_LINE_A; i++)
-    {
-        for (j = 0; j < NB_COLUMN_A; j++)
-        {
-            A_trans[j][i] = A[i][j];
-        }
-    }
-
-
-    // Fill H with A transposé
-    for (i = 0; i < NB_COLUMN_A; i++)
-    {
-        for (j = 0; j < K_NB_BIT_INFO; j++)
-        {
-            H[i][j] = A_trans[i][j];
-        }
-    }
-
-    // Fill H with ID matrice 
-    // Fill all 0
-    for (i = NB_LINE_A; i < NB_COLUMN_H; i++)
-    {
-        for (j = 0; j < NB_LINE_H; j++)
-        {
-            H[j][i] = 0;
-        }
-    }
-    // Fill all 1
-    j = 0;
-    for (i = NB_LINE_A; i < NB_COLUMN_H; i++)
-    {
-        H[j][i] = 1;
-        j++;
-    }
-}
-
 
 
 //
