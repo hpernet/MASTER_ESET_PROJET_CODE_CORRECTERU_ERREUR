@@ -1,0 +1,4 @@
+﻿  MyForm.cpp
+C:\Users\Victor\Documents\Projets\GolayGUI\GolayGUI\GolayGUI\MyForm.h(362,1): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+  Code_Golay.obj : module MSIL détecté ; liens incrémentiels désactivés pour MSIL ; édition de liens complète en cours
+  GolayGUI.vcxproj -> C:\Users\Victor\Documents\Projets\GolayGUI\GolayGUI\x64\Debug\GolayGUI.exe

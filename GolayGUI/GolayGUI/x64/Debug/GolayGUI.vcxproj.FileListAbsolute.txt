@@ -1,0 +1,4 @@
+C:\Users\Victor\Documents\Projets\GolayGUI\GolayGUI\GolayGUI\x64\Debug\GolayGUI.vcxproj.AssemblyReference.cache
+C:\Users\Victor\Documents\Projets\GolayGUI\GolayGUI\GolayGUI\x64\Debug\GolayGUI.vcxproj.SuggestedBindingRedirects.cache
+C:\Users\Victor\Documents\Projets\GolayGUI\GolayGUI\GolayGUI\x64\Debug\GolayGUI.MyForm.resources
+C:\Users\Victor\Documents\Projets\GolayGUI\GolayGUI\GolayGUI\x64\Debug\GolayGUI.vcxproj.GenerateResource.cache
